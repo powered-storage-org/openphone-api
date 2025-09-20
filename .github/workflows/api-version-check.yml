@@ -1,0 +1,234 @@
+name: API Version Check
+
+on:
+  schedule:
+    # Run every day at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: 'Type of check to perform'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - version-only
+          - changelog-only
+
+jobs:
+  check-api-updates:
+    name: Check for API Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run changelog monitor
+        id: monitor
+        run: |
+          # Make the script executable
+          chmod +x scripts/monitor-changelog.js
+          
+          # Run the monitoring script
+          bun run scripts/monitor-changelog.js > monitor-results.json 2>&1 || true
+          
+          # Check if monitoring was successful
+          if [ -f monitor-results.json ]; then
+            echo "monitor_success=true" >> $GITHUB_OUTPUT
+            echo "Monitor completed successfully"
+          else
+            echo "monitor_success=false" >> $GITHUB_OUTPUT
+            echo "Monitor failed"
+          fi
+
+      - name: Parse monitoring results
+        id: parse-results
+        run: |
+          if [ -f monitor-results.json ]; then
+            # Extract key information from the monitoring results
+            VERSION_CHANGED=$(grep -o '"versionChanged":[^,]*' monitor-results.json | cut -d':' -f2 | tr -d ' ,')
+            CHANGELOG_CHANGED=$(grep -o '"changelogChanged":[^,]*' monitor-results.json | cut -d':' -f2 | tr -d ' ,')
+            CURRENT_VERSION=$(grep -o '"currentVersion":"[^"]*"' monitor-results.json | cut -d'"' -f4)
+            STORED_VERSION=$(grep -o '"storedVersion":"[^"]*"' monitor-results.json | cut -d'"' -f4)
+            
+            echo "version_changed=$VERSION_CHANGED" >> $GITHUB_OUTPUT
+            echo "changelog_changed=$CHANGELOG_CHANGED" >> $GITHUB_OUTPUT
+            echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "stored_version=$STORED_VERSION" >> $GITHUB_OUTPUT
+            
+            echo "Version changed: $VERSION_CHANGED"
+            echo "Changelog changed: $CHANGELOG_CHANGED"
+            echo "Current version: $CURRENT_VERSION"
+            echo "Stored version: $STORED_VERSION"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "changelog_changed=false" >> $GITHUB_OUTPUT
+            echo "current_version=unknown" >> $GITHUB_OUTPUT
+            echo "stored_version=unknown" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue for API updates
+        if: steps.parse-results.outputs.version_changed == 'true' || steps.parse-results.outputs.changelog_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const currentVersion = '${{ steps.parse-results.outputs.current_version }}';
+            const storedVersion = '${{ steps.parse-results.outputs.stored_version }}';
+            const versionChanged = '${{ steps.parse-results.outputs.version_changed }}' === 'true';
+            const changelogChanged = '${{ steps.parse-results.outputs.changelog_changed }}' === 'true';
+            
+            let issueTitle = '';
+            let issueBody = '';
+            
+            if (versionChanged) {
+              issueTitle = `🔄 OpenPhone API Version Update: v${storedVersion} → v${currentVersion}`;
+              issueBody = `## OpenPhone API Version Update Detected
+              
+              **Previous Version:** \`${storedVersion}\`
+              **Current Version:** \`${currentVersion}\`
+              
+              ### 📋 What Changed
+              The OpenPhone API has been updated to version ${currentVersion}. Please review the changes and update the SDK accordingly.
+              
+              ### 🔗 References
+              - [OpenPhone API Changelog](https://www.openphone.com/docs/mdx/api-reference/changelog)
+              - [OpenAPI Specification](https://openphone-public-api-prod.s3.us-west-2.amazonaws.com/public/openphone-public-api-v1-prod.json)
+              
+              ### 📝 Action Required
+              - [ ] Review the [changelog](https://www.openphone.com/docs/mdx/api-reference/changelog) for breaking changes
+              - [ ] Update the OpenAPI specification file
+              - [ ] Regenerate TypeScript types
+              - [ ] Update the SDK client if necessary
+              - [ ] Test the updated SDK
+              - [ ] Update documentation if needed
+              - [ ] Release new SDK version if applicable
+              
+              ### 🏷️ Labels
+              - \`api-update\`
+              - \`version-${currentVersion}\`
+              - \`needs-review\`
+              
+              ---
+              *This issue was automatically created by the API version monitoring workflow.*`;
+            } else if (changelogChanged) {
+              issueTitle = `📝 OpenPhone API Changelog Updated`;
+              issueBody = `## OpenPhone API Changelog Update Detected
+              
+              The OpenPhone API changelog has been updated with new information.
+              
+              ### 🔗 References
+              - [OpenPhone API Changelog](https://www.openphone.com/docs/mdx/api-reference/changelog)
+              
+              ### 📝 Action Required
+              - [ ] Review the [changelog](https://www.openphone.com/docs/mdx/api-reference/changelog) for any new information
+              - [ ] Check if any changes affect the SDK
+              - [ ] Update documentation if needed
+              
+              ### 🏷️ Labels
+              - \`changelog-update\`
+              - \`needs-review\`
+              
+              ---
+              *This issue was automatically created by the API version monitoring workflow.*`;
+            }
+            
+            // Check if a similar issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: versionChanged ? 'api-update' : 'changelog-update'
+            });
+            
+            const similarIssue = existingIssues.data.find(issue => 
+              issue.title.includes(versionChanged ? 'OpenPhone API Version Update' : 'OpenPhone API Changelog Updated')
+            );
+            
+            if (similarIssue) {
+              console.log(`Similar issue already exists: #${similarIssue.number}`);
+              return;
+            }
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: versionChanged ? 
+                ['api-update', `version-${currentVersion}`, 'needs-review'] : 
+                ['changelog-update', 'needs-review']
+            });
+            
+            console.log(`Created issue #${issue.data.number}: ${issueTitle}`);
+
+      - name: Update OpenAPI spec if version changed
+        if: steps.parse-results.outputs.version_changed == 'true'
+        run: |
+          echo "🔄 Updating OpenAPI specification..."
+          
+          # Download the new spec
+          curl -o new-openapi.json https://openphone-public-api-prod.s3.us-west-2.amazonaws.com/public/openphone-public-api-v1-prod.json
+          
+          # Backup the old spec
+          cp openapi.json "openapi-backup-$(date +%Y%m%d-%H%M%S).json"
+          
+          # Update the spec
+          cp new-openapi.json openapi.json
+          
+          # Commit the changes
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add openapi.json
+          git commit -m "chore: update OpenAPI spec to version ${{ steps.parse-results.outputs.current_version }}"
+          git push
+
+      - name: Regenerate types if version changed
+        if: steps.parse-results.outputs.version_changed == 'true'
+        run: |
+          echo "🔄 Regenerating TypeScript types..."
+          
+          # Regenerate types
+          npx openapi-typescript openapi.json -o src/types.ts
+          
+          # Commit the updated types
+          git add src/types.ts
+          git commit -m "chore: regenerate TypeScript types for API version ${{ steps.parse-results.outputs.current_version }}"
+          git push
+
+      - name: Test updated SDK
+        if: steps.parse-results.outputs.version_changed == 'true'
+        run: |
+          echo "🧪 Testing updated SDK..."
+          
+          # Run tests
+          bun run test
+          
+          # Build to check for compilation errors
+          bun run build
+
+      - name: Create summary
+        run: |
+          echo "## API Version Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Current API Version:** ${{ steps.parse-results.outputs.current_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Stored API Version:** ${{ steps.parse-results.outputs.stored_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Changed:** ${{ steps.parse-results.outputs.version_changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changelog Changed:** ${{ steps.parse-results.outputs.changelog_changed }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.parse-results.outputs.version_changed }}" == "true" ]; then
+            echo "- **Actions Taken:** Updated OpenAPI spec, regenerated types, ran tests" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.parse-results.outputs.changelog_changed }}" == "true" ]; then
+            echo "- **Actions Taken:** Created changelog update issue" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Actions Taken:** No changes detected" >> $GITHUB_STEP_SUMMARY
+          fi

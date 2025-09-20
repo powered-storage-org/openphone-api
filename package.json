@@ -1,0 +1,77 @@
+{
+  "name": "@openphone/api-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for OpenPhone Public API (AI-generated - use with caution)",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "bun run build:types && bun run build:js",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "build:js": "bun build src/index.ts --outdir dist --format esm --target bun",
+    "dev": "bun run src/index.ts",
+    "test": "bun run src/test.ts",
+    "test:watch": "bun run src/test.ts --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prebuild": "bun run clean",
+    "prepublishOnly": "bun run build",
+    "ci": "bun run lint && bun run format:check && bun run type-check && bun run test && bun run build",
+    "audit": "bun audit",
+    "audit:fix": "bun audit --fix",
+    "check-updates": "bun run scripts/check-updates.js",
+    "monitor-changelog": "bun run scripts/monitor-changelog.js"
+  },
+  "keywords": [
+    "openphone",
+    "api",
+    "sdk",
+    "typescript",
+    "phone",
+    "calls",
+    "messages",
+    "voip"
+  ],
+  "author": "OpenPhone Support <support@openphone.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openphone/openphone-api-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openphone/openphone-api-sdk/issues"
+  },
+  "homepage": "https://github.com/openphone/openphone-api-sdk#readme",
+  "dependencies": {
+    "openapi-fetch": "^0.14.0"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.23.4",
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.36.0",
+    "globals": "^16.4.0",
+    "openapi-typescript": "^7.9.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  }
+}
