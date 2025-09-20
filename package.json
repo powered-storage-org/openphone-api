@@ -1,7 +1,7 @@
 {
   "name": "@openphone/api-sdk",
   "version": "1.0.0",
-  "description": "TypeScript SDK for OpenPhone Public API (AI-generated - use with caution)",
+  "description": "Unofficial TypeScript SDK for OpenPhone Public API (AI-generated - use with caution)",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,8 @@
     "SECURITY.md"
   ],
   "scripts": {
-    "build": "bun run build:types && bun run build:js",
+    "build": "bun run generate:types && bun run build:types && bun run build:js",
+    "generate:types": "npx openapi-typescript openapi.json -o src/types.ts",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "build:js": "bun build src/index.ts --outdir dist --format esm --target bun",
     "dev": "bun run src/index.ts",
@@ -27,11 +28,12 @@
     "clean": "rm -rf dist",
     "prebuild": "bun run clean",
     "prepublishOnly": "bun run build",
-    "ci": "bun run lint && bun run format:check && bun run type-check && bun run test && bun run build",
+    "ci": "bun run generate:types && bun run lint && bun run format:check && bun run type-check && bun run test && bun run build",
     "audit": "bun audit",
     "audit:fix": "bun audit --fix",
     "check-updates": "bun run scripts/check-updates.js",
-    "monitor-changelog": "bun run scripts/monitor-changelog.js"
+    "monitor-changelog": "bun run scripts/monitor-changelog.js",
+    "setup-dev": "bun run scripts/setup-dev.js"
   },
   "keywords": [
     "openphone",
