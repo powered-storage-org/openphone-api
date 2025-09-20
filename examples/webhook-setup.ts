@@ -9,7 +9,7 @@
  * Use at your own risk.
  */
 
-import { OpenPhoneClient } from '@openphone/api-sdk';
+import { OpenPhoneClient } from '@noobforal/openphone-api-sdk';
 
 async function webhookSetup() {
   const client = new OpenPhoneClient({
