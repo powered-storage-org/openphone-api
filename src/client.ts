@@ -7,7 +7,7 @@
  */
 
 import createClient from 'openapi-fetch';
-import type { paths } from './types.js';
+import type { paths } from './types';
 
 export interface OpenPhoneConfig {
   apiKey: string;

@@ -1,4 +1,4 @@
-import { OpenPhoneClient } from './client.js';
+import { OpenPhoneClient } from './client';
 
 // Simple test to verify the client can be instantiated
 function testClientInstantiation() {
