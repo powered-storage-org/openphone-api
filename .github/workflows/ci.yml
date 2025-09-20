@@ -89,13 +89,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create Git Tag
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git tag -a "v${{ github.event.release.tag_name }}" -m "Release v${{ github.event.release.tag_name }}"
-          git push origin "v${{ github.event.release.tag_name }}"
-
   # Release Job
   release:
     name: Create Release

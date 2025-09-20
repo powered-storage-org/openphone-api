@@ -65,7 +65,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
-          git push origin "v${{ github.event.inputs.version }}"
+          echo "Git tag created locally. Push manually with: git push origin v${{ github.event.inputs.version }}"
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
