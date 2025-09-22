@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Unofficial TypeScript SDK for OpenPhone Public API (AI-generated - use with caution)",
   "main": "dist/index.js",
   "module": "dist/index.js",
