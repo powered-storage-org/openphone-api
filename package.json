@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "npm run generate:types && npm run build:types && npm run build:js",
-    "generate:types": "npx openapi-typescript openapi.json -o src/types.ts",
+    "generate:types": "npx openapi-typescript openapi.json -o src/types.ts && npx prettier --write src/types.ts",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "build:js": "tsc --project tsconfig.build.json",
     "build:js:bun": "bun build src/index.ts --outdir dist --format esm --target bun",
