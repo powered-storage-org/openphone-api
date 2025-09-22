@@ -1,3 +1,3 @@
-export { OpenPhoneClient } from './client';
-export type { OpenPhoneConfig } from './client';
-export type { paths } from './types';
+export { OpenPhoneClient } from './client.js';
+export type { OpenPhoneConfig } from './client.js';
+export type { paths } from './types.js';

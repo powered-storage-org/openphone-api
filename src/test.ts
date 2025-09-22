@@ -89,6 +89,8 @@ function runTests() {
 }
 
 // Run tests if this file is executed directly
-if (import.meta.main) {
+if (typeof require !== 'undefined' && require.main === module) {
+  runTests();
+} else if (typeof import.meta !== 'undefined' && (import.meta as any).main) {
   runTests();
 }
