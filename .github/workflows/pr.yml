@@ -13,32 +13,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
         with:
-          bun-version: latest
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Download OpenAPI specification
         run: |
           curl -o openapi.json https://openphone-public-api-prod.s3.us-west-2.amazonaws.com/public/openphone-public-api-v1-prod.json
 
       - name: Generate TypeScript types
-        run: bun run generate:types
+        run: npm run generate:types
 
       - name: Run linter
-        run: bun run lint
+        run: npm run lint
 
       - name: Run formatter check
-        run: bun run format --check
+        run: npm run format:check
 
       - name: Run tests
-        run: bun run test
+        run: npm test
 
       - name: Build project
-        run: bun run build
+        run: npm run build
 
       - name: Check build output
         run: |
