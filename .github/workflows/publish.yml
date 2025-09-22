@@ -1,0 +1,61 @@
+name: Manual Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (leave empty for current version)'
+        required: false
+        type: string
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download OpenAPI specification
+        run: |
+          curl -o openapi.json https://openphone-public-api-prod.s3.us-west-2.amazonaws.com/public/openphone-public-api-v1-prod.json
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check if version already exists
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Check if version already exists on npm
+          if npm view @noobforal/openphone-api-sdk@$CURRENT_VERSION version 2>/dev/null; then
+            echo "❌ Version $CURRENT_VERSION already exists on npm."
+            echo "Please update the version in package.json before publishing."
+            exit 1
+          else
+            echo "✅ Version $CURRENT_VERSION does not exist. Proceeding with publish."
+          fi
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag "v$CURRENT_VERSION"
+          git push origin "v$CURRENT_VERSION"
