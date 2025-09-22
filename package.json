@@ -16,14 +16,14 @@
     "SECURITY.md"
   ],
   "scripts": {
-    "build": "npm run generate:types && npm run build:types && npm run build:js",
+    "build": "npm run generate:types && npm run build:types && npm run build:js && npm run fix:declarations",
     "generate:types": "npx openapi-typescript openapi.json -o src/types.ts && npx prettier --write src/types.ts",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "build:js": "tsc --project tsconfig.build.json",
     "build:js:bun": "bun build src/index.ts --outdir dist --format esm --target bun",
     "dev": "node --loader ts-node/esm src/index.ts",
     "dev:bun": "bun run src/index.ts",
-    "test": "node --loader ts-node/esm src/test.ts",
+    "test": "npm run build && node dist/test.js",
     "test:bun": "bun run src/test.ts",
     "test:watch": "node --loader ts-node/esm --watch src/test.ts",
     "lint": "eslint src/**/*.ts",
@@ -39,7 +39,8 @@
     "audit:fix": "npm audit fix",
     "check-updates": "node scripts/check-updates.js",
     "monitor-changelog": "node scripts/monitor-changelog.js",
-    "setup-dev": "node scripts/setup-dev.js"
+    "setup-dev": "node scripts/setup-dev.js",
+    "fix:declarations": "node scripts/fix-declarations.js"
   },
   "keywords": [
     "openphone",

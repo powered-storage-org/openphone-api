@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ES2022",
         "module": "ESNext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "declaration": true,
         "declarationMap": true,
         "outDir": "./dist",
@@ -16,9 +16,7 @@
         "isolatedModules": true,
         "noEmit": false,
         "allowImportingTsExtensions": false,
-        "types": [
-            "node"
-        ]
+    "types": ["node"]
     },
     "include": [
         "src/**/*"
