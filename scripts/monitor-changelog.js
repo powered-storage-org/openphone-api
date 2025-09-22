@@ -30,7 +30,7 @@ class ChangelogMonitor {
                 path: '/docs/mdx/api-reference/changelog',
                 method: 'GET',
                 headers: {
-                    'User-Agent': 'OpenPhone-SDK-Monitor/1.0.0',
+                    'User-Agent': 'OpenPhone-SDK-Monitor/1.0.1',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
                 }
             };
@@ -60,7 +60,7 @@ class ChangelogMonitor {
                 path: '/public/openphone-public-api-v1-prod.json',
                 method: 'GET',
                 headers: {
-                    'User-Agent': 'OpenPhone-SDK-Monitor/1.0.0'
+                    'User-Agent': 'OpenPhone-SDK-Monitor/1.0.1'
                 }
             };
 

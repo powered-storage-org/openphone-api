@@ -1,8 +1,8 @@
 {
   "versionChanged": false,
   "changelogChanged": false,
-  "currentVersion": "1.0.0",
-  "storedVersion": "1.0.0",
+  "currentVersion": "1.0.1",
+  "storedVersion": "1.0.1",
   "changelogData": {
     "latestVersion": "6.6.0",
     "changelogEntries": [
@@ -16,7 +16,7 @@
     "openapi": "3.1.0",
     "info": {
       "title": "OpenPhone Public API",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "API for connecting with OpenPhone.",
       "contact": {
         "name": "OpenPhone Support",

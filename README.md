@@ -352,7 +352,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Changelog
 
-### 1.0.0
+### 1.0.1
 
 - Initial release
 - Full TypeScript support

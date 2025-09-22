@@ -73,7 +73,7 @@ export class OpenPhoneClient {
       headers: {
         'Authorization': `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'openphone-api-sdk/1.0.0',
+        'User-Agent': 'openphone-api-sdk/1.0.1',
       },
     });
   }
@@ -133,7 +133,7 @@ Update `package.json` for npm publication:
 ```json
 {
   "name": "@openphone/api-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TypeScript SDK for OpenPhone Public API",
   "main": "dist/index.js",
   "module": "dist/index.js",

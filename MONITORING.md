@@ -17,7 +17,7 @@ Based on the [OpenPhone API changelog](https://www.openphone.com/docs/mdx/api-re
 According to the latest changelog information:
 
 - **Latest Version**: 1.2.0 (January 22, 2025)
-- **Current SDK Version**: 1.0.0
+- **Current SDK Version**: 1.0.1
 - **Status**: ⚠️ **OUTDATED** - The API has been updated with new features
 
 ### Recent Changes (v1.2.0 - January 22, 2025)
@@ -55,7 +55,7 @@ bun run monitor-changelog
 The system creates different types of issues:
 
 ### API Version Updates
-- **Title**: `🔄 OpenPhone API Version Update: v1.0.0 → v1.2.0`
+- **Title**: `🔄 OpenPhone API Version Update: v1.0.1 → v1.2.0`
 - **Labels**: `api-update`, `version-1.2.0`, `needs-review`
 - **Actions**: Updates OpenAPI spec, regenerates types, runs tests
 

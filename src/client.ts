@@ -34,7 +34,7 @@ export class OpenPhoneClient {
       headers: {
         Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'openphone-api-sdk/1.0.0',
+        'User-Agent': 'openphone-api-sdk/1.0.1',
       },
     });
   }
@@ -245,7 +245,7 @@ export class OpenPhoneClient {
       headers: {
         Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'openphone-api-sdk/1.0.0',
+        'User-Agent': 'openphone-api-sdk/1.0.1',
       },
     });
   }

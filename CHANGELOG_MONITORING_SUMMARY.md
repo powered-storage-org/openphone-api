@@ -9,7 +9,7 @@ Successfully created a comprehensive monitoring system that tracks OpenPhone API
 Based on the [OpenPhone API changelog](https://www.openphone.com/docs/mdx/api-reference/changelog), I discovered:
 
 ### ⚠️ **CRITICAL FINDING**: API is Outdated
-- **Current SDK Version**: 1.0.0 (stored in openapi.json)
+- **Current SDK Version**: 1.0.1 (stored in openapi.json)
 - **Latest API Version**: 1.2.0 (January 22, 2025)
 - **Status**: The SDK is **2 major versions behind**
 
