@@ -28,7 +28,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Generated files
-src/types.ts
 openapi.json
 openapi-generator-config.json
 
