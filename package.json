@@ -63,7 +63,7 @@
   },
   "homepage": "https://github.com/openphone/openphone-api-sdk#readme",
   "dependencies": {
-    "openapi-fetch": "^0.14.0"
+    "openapi-fetch": "^0.15.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.23.4",
